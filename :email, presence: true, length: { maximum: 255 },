@@ -1,0 +1,37 @@
+[1mdiff --git a/app/models/user.rb b/app/models/user.rb[m
+[1mindex 91a902b..c76cce0 100644[m
+[1m--- a/app/models/user.rb[m
+[1m+++ b/app/models/user.rb[m
+[36m@@ -1,10 +1,8 @@[m
+ class User < ApplicationRecord[m
+[31m-  attr_accessor :remember_token[m
+[32m+[m[32m  attr_accessor :remember_token, :activation_token[m
+[32m+[m[32m  before_save   :downcase_email[m
+[32m+[m[32m  before_create :create_activation_digest[m
+   validates :name,  presence: true, length: { maximum: 50 }[m
+[31m-  VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i[m
+[31m-  validates :email, presence: true, length: { maximum: 255 },[m
+[31m-                    format: { with: VALID_EMAIL_REGEX },[m
+[31m-                    uniqueness: { case_sensitive: false }[m
+   has_secure_password[m
+   validates :password, presence: true, length: { minimum: 6 }, allow_nil: true[m
+ [m
+[36m@@ -35,4 +33,17 @@[m [mclass User < ApplicationRecord[m
+   def forget[m
+     update_attribute(:remember_digest, nil)[m
+   end[m
+[32m+[m[41m  [m
+[32m+[m[32m  private[m
+[32m+[m
+[32m+[m[32m    # メールアドレスをすべて小文字にする[m
+[32m+[m[32m    def downcase_email[m
+[32m+[m[32m      self.email = email.downcase[m
+[32m+[m[32m    end[m
+[32m+[m
+[32m+[m[32m    # 有効化トークンとダイジェストを作成および代入する[m
+[32m+[m[32m    def create_activation_digest[m
+[32m+[m[32m      self.activation_token  = User.new_token[m
+[32m+[m[32m      self.activation_digest = User.digest(activation_token)[m
+[32m+[m[32m    end[m
+ end[m
+\ No newline at end of file[m
